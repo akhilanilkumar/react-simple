@@ -1,13 +1,13 @@
 //  Create an instance of an App.
-import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
+  createUserWithEmailAndPassword,
   getAuth,
-  signInWithRedirect,
-  signInWithPopup,
   GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,7 +21,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 // All the CRUD operation is going to happen using this firebase instance
-const firebaseApp = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider().setCustomParameters({
   // Whenever user communicating with Firebase, always select an account.
@@ -29,13 +29,21 @@ const provider = new GoogleAuthProvider().setCustomParameters({
 });
 
 export const auth = getAuth();
+
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+
+export const signInWithGoogleRedirect = () =>
+  signInWithRedirect(auth, provider);
 
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  path,
+  optional = {}
+) => {
   // Create a user doc reference
-  const userDocRef = doc(db, "users", userAuth.uid);
+  const userDocRef = doc(db, path, userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
   const { displayName, email } = userAuth;
   const createdAt = new Date();
@@ -47,9 +55,22 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        ...optional
       });
     } catch (error) {
       console.log(error);
     }
   }
+};
+
+/**
+ * Save the email and password into the firebase
+ * @param {Email} email Email of the user
+ * @param {Password} password Password of the user
+ * @returns Reponse from Firebase API
+ */
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
