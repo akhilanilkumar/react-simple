@@ -1,28 +1,28 @@
-import { getRedirectResult } from "firebase/auth";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-    auth,
-    createUserDocumentFromAuth,
-    signInWithGooglePopup
+  createUserDocumentFromAuth,
+  signInWithGooglePopup
 } from "../util/firebase.utils";
 
 const SignIn = () => {
-  useEffect(() => {
-    async function redirect() {
-      const response = await getRedirectResult(auth);
-      if (response) {
-        await createUserDocumentFromAuth(response.user, "r-users");
-      }
-    }
-    redirect();
-  }, []);
+  // useEffect(() => {
+  //   async function redirect() {
+  //     const response = await getRedirectResult(auth);
+  //     if (response) {
+  //       await createUserDocumentFromAuth(response.user, "r-users");
+  //     }
+  //   }
+  //   redirect();
+  // }, []);
+  const navigate = useNavigate();
+
 
   const logGoogleUser = async () => {
     const { user } = await signInWithGooglePopup();
-    // console.log(respponse);
     createUserDocumentFromAuth(user, "users");
+    navigate("/");
   };
-  
+
   return (
     <div>
       <h1>Sign In ✍ </h1>

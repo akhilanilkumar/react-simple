@@ -2,7 +2,7 @@ import { useState } from "react";
 import FormInput from "../form-input/form-input.component";
 import {
   createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
+  createUserDocumentFromAuth
 } from "../util/firebase.utils";
 import "./sign-up.component.css";
 
@@ -18,7 +18,6 @@ const SignUp = () => {
   const [form, setForm] = useState(formObj);
   // Destruct the object values
   const { email, password, confirmPassword } = form;
-
   // Invoke on input change
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -35,6 +34,8 @@ const SignUp = () => {
         email,
         password
       );
+      // Set user details in context object after signup
+      // setCurrentUser(user);
 
       // Save the user information in the Firebase table
       await createUserDocumentFromAuth(user, "users", {
